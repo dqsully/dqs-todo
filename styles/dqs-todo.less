@@ -1,0 +1,90 @@
+// The ui-variables file is provided by base themes provided by Atom.
+//
+// See https://github.com/atom/atom-dark-ui/blob/master/styles/ui-variables.less
+// for a full listing of what's available.
+@import "ui-variables";
+
+@purple: #b023ae;
+@dark-red: #ac301a;
+@yellow: #c0c82e;
+@orange: #db8327;
+@red: #cb3030;
+
+.syntax--text.syntax--todo {
+  .syntax--meta.syntax--markup-section {
+
+    // Comments
+    .syntax--comment {
+      text-decoration: line-through;
+    }
+
+    .syntax--fail {
+      text-decoration-color: @dark-red;
+
+      &.syntax--punctuation {
+        color: @dark-red;
+      }
+    }
+
+    // Importance
+    .syntax--importance-3 {
+      text-decoration: overline;
+      text-decoration-color: @red;
+
+      &.syntax--punctuation {
+        color: @red;
+      }
+    }
+
+    .syntax--importance-2 {
+      text-decoration: overline;
+      text-decoration-color: @orange;
+
+      &.syntax--punctuation {
+        color: @orange;
+      }
+    }
+
+    .syntax--importance-1 {
+      text-decoration: overline;
+      text-decoration-color: @yellow;
+
+      &.syntax--punctuation {
+        color: @yellow;
+      }
+    }
+
+    // Category
+    .syntax--category {
+      text-decoration-line: underline;
+      text-decoration-color: @purple;
+
+      &.syntax--punctuation {
+        color: @purple;
+      }
+    }
+
+
+    // Date
+    .syntax--date {
+      text-decoration-line: underline;
+      text-decoration-color: @syntax-color-tag;
+
+      &.syntax--punctuation, &.syntax--entity {
+        color: @syntax-color-tag;
+      }
+    }
+
+    // Functions
+    .syntax--function {
+      &:not(.syntax--support) {
+        text-decoration-line: underline;
+        text-decoration-color: @syntax-color-function;
+      }
+
+      &.syntax--punctuation, &.syntax--entity {
+        color: @syntax-color-function;
+      }
+    }
+  }
+}

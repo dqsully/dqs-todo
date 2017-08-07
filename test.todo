@@ -1,0 +1,190 @@
+#Category
+  Item
+  Item with date @due tomorrow;
+  Item with lazy date @due tomorrow
+  -Finished item
+  !-Failed item
+  !Important item
+  !!More important item
+  !!!Really important item
+  3: Item with priority 3
+  3.01: Item with priority 3.01
+  3.01.2: Item with priority 3.01.2 (after 3.01)
+  3.1.2: Item with priority 3.1.2 (after 3.01, same as 3.01.2)
+  03.01: Item with priority 03.01 (same as 3.01)
+  Item referencing another priority :3.01:
+  Item referencing another item by index :#2:
+  Item referencing a priority a level up :../1:
+  Item with tag `this is a tag`
+  Item with function \some-function;
+  Item with lazy function \some-function
+  Item with multiple functions \some-function, \some-other-function;
+  Item with function with parameters \some-function nonquotedparameter "quoted parameter";
+  Item with function with time parameter \some-other-function @ tomorrow;;
+  Item with lazy function with time parameter \some-other-function @ tomorrow;
+  Item with super lazy function with time parameter \some-other-function @ tomorrow
+  Item with function with two time parameters \some-other-different-function @ today; @ tomorrow;;
+  Item with a function referencing a prioritized line \yet-another-function :3.01:;
+  Item with a function referencing another item by index \yet-another-function :#2:;
+  Item with delayed function @ tomorrow -> \remind-me "foo";
+  Item with lazy delayed function @ tomorrow -> \remind-me "foo"
+  Item with delayed functions @ tomorrow -> \remind-me "foo", \remind-me "bar";
+1: A priority that is referenced by a child of this level
+#Category with date @due tomorrow;
+  !Important item underneath underlined item
+  !!# Important category
+  !!!Important item with date @due tomorrow;
+  !#Important category with date @due much later;
+#Date patterns
+  #Relative Days
+    @ yesterday
+    @ today
+    @ tomorrow
+  #Weekdays
+    @ Monday monday Mon mon m
+    @ Tuesday tuesday Tue tue t
+    @ Wednesday wednesday Wed wed w
+    @ Thursday thursday Thu thu th
+    @ Friday friday Fri fri f
+    @ Saturday saturday Sat sat s
+    @ Sunday sunday Sun sun su
+  #Months
+    @ January january Jan jan
+    @ February february Feb feb
+    @ March march Mar mar
+    @ April april Apr apr
+    @ May may
+    @ June june Jun jun
+    @ July july Jul jul
+    @ August august Aug aug
+    @ September september Sept sept Sep sep
+    @ October october Oct oct
+    @ November november Nov nov
+    @ December december Dec dec
+  #Dates
+    @ Jan 1st
+    @ February 2nd
+    @ mar 3rd
+    @ april 4th
+    @ may 5
+    @ jun 11th
+    @ jul 21st
+    @ aug 30th
+    #Not Dates
+      @ jan 1nd
+      @ feb 2rd
+      @ mar 3th
+      @ may 11st
+      @ jun 21th
+  #Relative Times
+    @ in 1 second,  a sec ago
+    @ in 2 minutes, 2 min ago
+    @ in 3 hours,   3 h ago
+    @ in 4 days,    4 d ago
+    @ in 5 weeks,   5 wk ago
+    @ in 6 months,  6 mo ago
+    @ in 7 years,   7 y ago
+  #Times
+    @ 12:30pm
+    @ 1:00am
+    @ 16:00
+    @ 24:00
+    @ 00:30
+    # Not Times
+      @ 24:01
+      @ 1600
+      @ 12:60pm
+      @ 13:00pm
+  #Modifiers
+    (Default modifier if required is @ at 12:00pm;)
+    @ first second third fourth fifth
+    @ at 12:30pm
+  #Time Span
+    (Default time span if required is @ forever;)
+    @ a second, 1 seconds, sec
+    @ a minute, 2 minutes, min
+    @ a hour  , 3 hours  , h
+    @ a day   , 4 days   , d
+    @ a week  , 5 weeks  , wk
+    @ a month , 6 months , mo
+    @ a year  , 7 years  , y
+    @ from monday to friday
+    @ from january to march
+    @ from jan 1st to jan 15th
+    @ until friday
+    @ until march
+    @ until jan 15th
+    @ forever
+  #Support Functions
+    @ every first and third thursday
+    @ next wednesday
+    @ this year, this month, this week, this day, this hour, this minute, this second
+  #Keywords
+    @ first, second and third thursday
+    @ from monday to friday
+    @ at 12:30pm
+    @ every second on thursday; (time span)
+    @ every second thursday; (modifier)
+
+#Definitions section
+^{
+  // Generic comment
+
+  // Adds the current item to your trello board
+  #define function: addToTrello
+  #end define
+
+  // Adds the current item to your trello board
+  // note: this function definition is illegal because it occupies the same namespace as the previous one
+  #define function <delayed|not delayed>: addToTrello
+
+  #end define
+
+  // Adds a notification in the action center
+  #define function <not delayed>: remind
+
+  #end define
+
+  // Adds a notification in the action center
+  #define function <delayed>: remind
+
+  #end define
+
+  // Automatically calculates lunchtime depending on the day given
+  #define time macro: lunch
+
+  #end define
+
+  // Reminds the user daily
+  #define time function: due
+
+  #end define
+
+  // TODO later
+  #define constant:
+  #end define
+
+  #define time constant:
+  #end define
+
+^}
+
+#API
+  {} todo
+    Main object
+
+    fn parse(todoText)
+      Parses the text as if it were a line or part of a line of a todo file
+    {} modules
+      fn get(moduleName)
+        Loads the module if not yet loaded, and returns it
+    {} functions
+
+
+  {} this
+    The line the function was called from
+
+
+#TODO for the language
+  Style the items
+  Make sure that priorities are sorted appropriately

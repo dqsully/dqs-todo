@@ -1,0 +1,366 @@
+scopeName: 'text.todo.markup'
+fileTypes: [
+  'todo'
+]
+name: 'Todo'
+patterns: [
+  {
+    begin: '^\\s*(\\^\\{)'
+    beginCaptures:
+      1:
+        name: 'punctuation.macro.begin.todo'
+    end: '^\\s*(\\^\\})'
+    endCaptures:
+      1:
+        name: 'punctuation.macro.end.todo'
+    name: 'meta.definitions-section.todo'
+    patterns: [
+      include: '#definitions'
+    ]
+  }
+  {
+    match: '^\\s*(.+)$'
+    captures:
+      1:
+        patterns: [
+          begin: '^'
+          end: '$'
+          name: 'meta.markup-section.todo'
+          patterns: [
+            include: '#line.comments'
+          ]
+        ]
+  }
+]
+repository:
+  'line.comments':
+    # Matches comments first, then moves on
+    patterns: [
+        {
+          match: '^(-)(.*)$'
+          captures:
+            1:
+              name: 'punctuation.markup.comment.todo'
+            2:
+              name: 'comment.line.todo'
+        }
+        {
+          match: '^(!-)(.*)$'
+          captures:
+            1:
+              name: 'punctuation.markup.fail.comment.todo'
+            2:
+              name: 'markup.fail.comment.todo'
+        }
+        {
+          include: '#line.importance'
+        }
+    ]
+
+  'line.importance':
+    # Matches importances, then moves on
+    patterns: [
+      {
+        match: '^(!!!)(.*)$'
+        captures:
+          1:
+            name: 'punctuation.markup.importance-3.todo'
+          2:
+            patterns: [
+              include: '#line.priority'
+            ]
+        name: 'meta.markup.importance-3.todo'
+      }
+      {
+        match: '^(!!)(.*)$'
+        captures:
+          1:
+            name: 'punctuation.markup.importance-2.todo'
+          2:
+            patterns: [
+              include: '#line.priority'
+            ]
+        name: 'meta.markup.importance-2.todo'
+      }
+      {
+        match: '^(!)(.*)$'
+        captures:
+          1:
+            name: 'punctuation.markup.importance-1.todo'
+          2:
+            patterns: [
+              include: '#line.priority'
+            ]
+        name: 'meta.markup.importance-1.todo'
+      }
+      {
+        include: '#line.priority'
+      }
+    ]
+
+  'line.priority':
+    # Matches priorities, then moves on
+    patterns: [
+      {
+        match: '^([0-9]+(?:\\.[0-9]+)*\\s*:)?(.*)$'
+        captures:
+          1:
+            name: 'constant.other.symbol.markup.priority.todo'
+          2:
+            patterns: [
+              include: '#line'
+            ]
+      }
+    ]
+
+  'line':
+    # Matches different kinds of lines, like items/categories
+    patterns: [
+      {
+        match: '^(#)(.*)$'
+        captures:
+          1:
+            name: 'punctuation.markup.category.todo'
+          2:
+            name: 'markup.category.todo'
+            patterns: [
+              include: '#item'
+            ]
+      }
+      {
+        match: '^(.+)$'
+        captures:
+          1:
+            patterns: [
+              include: '#item'
+            ]
+      }
+    ]
+
+  'item':
+    # Line without leading whitespace or other decorations
+    patterns: [
+      {
+        # Tags
+        match: '(`).*?(`|$)'
+        captures:
+          1:
+            name: 'punctuation.markup.tag.todo'
+          3:
+            name: 'punctuation.markup.tag.todo'
+        name: 'string.quoted.other.markup.tag.todo'
+      }
+      {
+        include: '#item.reference'
+      }
+      {
+        include: '#item.function'
+      }
+      {
+        include: '#item.delayed-function'
+      }
+      {
+        include: '#item.date'
+      }
+    ]
+
+  'item.reference':
+    # Line references by priority, order, or more?
+    match: ':(\\.|\\.\\.|([0-9]+(?:\\.[0-9]+)*)|#[0-9]+)(/(\\.|\\.\\.|([0-9]+(?:\\.[0-9]+)*)|#[0-9]+))*:'
+    name: 'constant.other.symbol.markup.priority.todo'
+
+  'item.function':
+    # Matches function calls within item
+    begin: '(\\\\)([a-zA-Z-]+)'
+    beginCaptures:
+      1:
+        name: 'punctuation.markup.function.todo'
+      2:
+        name: 'entity.markup.name.function.todo'
+    end: '(;)'
+    endCaptures:
+      1:
+        name: 'punctuation.markup.function.todo'
+    patterns: [
+      include: '#item.function.content'
+    ]
+    name: 'markup.function.todo'
+
+  'item.delayed-function':
+    # Matches dates with associated function calls
+    begin: '(@)([a-zA-Z-]*)(.*?)(->\\s*)'
+    beginCaptures:
+      1:
+        name: 'punctuation.markup.date.delayed-function.todo'
+      2:
+        name: 'entity.markup.name.date.delayed-function.todo'
+      3:
+        patterns: [
+          include: '#item.date.content'
+        ]
+      4:
+        name: 'punctuation.markup.date.delayed-function.todo'
+    end: '(;)'
+    endCaptures:
+      1:
+        name: 'punctuation.markup.date.delayed-function.todo'
+    patterns: [
+      include: '#item.function.content'
+    ]
+    name: 'markup.date.delayed-function.todo'
+    contentName: 'markup.function.todo'
+
+  'item.date':
+    # Date matching within line
+    begin: '(@)([a-zA-Z-]*)'
+    beginCaptures:
+      1:
+        name: 'punctuation.markup.date.todo'
+      2:
+        name: 'entity.markup.name.date.todo'
+    end: '(;)'
+    endCaptures:
+      1:
+        name: 'punctuation.markup.date.todo'
+    patterns: [
+      include: '#item.date.content'
+    ]
+    name: 'markup.date.todo'
+
+
+  'item.function.content':
+    patterns: [
+      {
+        include: '#item.reference'
+      }
+      {
+        # Strings
+        begin: '(")'
+        end: '(")'
+        name: 'string.quoted.double.markup.todo'
+      }
+      {
+        # Comma
+        match: ','
+        name: 'punctuation.markup.function.separator.todo'
+      }
+      {
+        # Function call
+        match: '(\\\\)([a-zA-Z.-]+)'
+        captures:
+          1:
+            name: 'punctuation.markup.function.todo'
+          2:
+            name: 'entity.markup.name.function.todo'
+      }
+      {
+        # Include dates as parameters
+        include: '#item.date'
+      }
+    ]
+
+  'item.date.content':
+    patterns: [
+      {
+        # Strings
+        begin: '(")'
+        end: '(")'
+        name: 'string.quoted.double.markup.todo'
+      }
+      {
+        # Comma
+        match: ','
+        name: 'punctuation.markup.date.separator.todo'
+      }
+      {
+        # Relative Days
+        match: '\\b(yesterday|today|tomorrow)\\b'
+        name: 'support.constant.day.relative.todo'
+      }
+      {
+        # Weekdays
+        match: '\\b(m|(M|m)on(day)?|t|(T|t)ue(sday)?|w|(W|w)ed(nesday)?|th|(T|t)hu(rsday)?|f|(F|f)ri(day)?|s|(S|s)at(urday)?|su|(S|s)un(day)?)\\b'
+        name: 'support.constant.day.week.todo'
+      }
+      {
+        # Dates
+        match: '\\b(((J|j)an(uary)?|(F|f)eb(ruary)?|(M|m)ar(ch)?|(A|a)pr(il)?|(M|m)ay|(J|j)une?|(J|j)uly?|(A|a)ug(ust)?|(S|s)ep(t(ember)?)?|(O|o)ct(ober)?|(N|n)ov(ember)?|(D|d)ec(ember)?)\\s*(1[0-9]th|([02-9][0-9]*)?(1st|2nd|3rd|[4-90]th)|[0-9]+))\\b'
+        name: 'constant.numeric.date.todo'
+      }
+      {
+        # Months
+        match: '\\b((J|j)an(uary)?|(F|f)eb(ruary)?|(M|m)ar(ch)?|(A|a)pr(il)?|(M|m)ay|(J|j)une?|(J|j)uly?|(A|a)ug(ust)?|(S|s)ep(t(ember)?)?|(O|o)ct(ober)?|(N|n)ov(ember)?|(D|d)ec(ember)?)\\b'
+        name: 'support.constant.month.todo'
+      }
+      {
+        # Times
+        match: '\\b((1[0-2]|0?[0-9]):[0-5][0-9](am|pm)|([01][0-9]|2[0-3]):[0-5][0-9]|24:00)\\b'
+        name: 'constant.numeric.time.todo'
+      }
+      {
+        # Time Spans
+        match: '\\b(?:([0-9]+\\s*|a\\s*)?(?:sec(?:onds)?|min(?:utes?)?|h(?:ours?)?|d(?:ays?)?|wk|weeks?|mo(?:nths?)?|y(?:ears?)?)|forever)\\b|(a|1)\\s*second|(?<=this\\s)second|\\bsecond(?=\\s*(?:on|of)\\b)'
+        captures:
+          1:
+            name: 'constant.numeric.time-span.todo'
+          2:
+            name: 'constant.numeric.time-span.todo'
+        name: 'entity.name.type.time-span.todo'
+      }
+      {
+        # Modifiers
+        match: '\\b(first|second|third|fourth|fifth)\\b'
+        name: 'support.constant.modifier.todo'
+      }
+      {
+        # Support functions
+        match: '\\b(every|next|this)\\b'
+        name: 'support.function.todo'
+      }
+      {
+        # Keywords
+        match: '\\b(ago|and|at|from|in|on|to|until)\\b'
+        name: 'keyword.operator.todo'
+      }
+    ]
+
+
+  'definitions':
+    patterns: [
+      {
+        begin: '^\\s*(#define)\\s+(?:(function)\\s*(<.*?>)?|(time\\s+(?:macro|function)))\\s*:\\s*([a-zA-z.-]+)\\s*$'
+        beginCaptures:
+          1:
+            name: 'keyword.control.definitions.todo'
+          2:
+            name: 'keyword.control.definitions.todo'
+          3:
+            patterns: [
+              include: '#definitions.begin.keywords'
+            ]
+          4:
+            name: 'keyword.control.definitions.todo'
+          5:
+            name: 'entity.name.function'
+        end: '^\\s*(#end\\s+define)\\s*$'
+        endCaptures:
+          1:
+            name: 'keyword.control.definitions.todo'
+        patterns: [
+          include: 'source.js'
+        ]
+      }
+      {
+        # Comments
+        match: '//.*$'
+        name: 'comment.line.definitions.todo'
+      }
+    ]
+
+  'definitions.begin.keywords':
+    patterns: [
+      {
+        match: '\\b(delayed|not)\\b'
+        name: 'storage.modifier.definitions.todo'
+      }
+    ]

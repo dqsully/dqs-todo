@@ -1,0 +1,23 @@
+'.text.todo.markup':
+  editor:
+    commentStart: '-'
+    # 'increaseIndentPattern': '(?x)
+    #    ^ .* \\{ [^}"\']* $
+    #   |^ .* \\( [^\\)"\']* $
+    #   |^ \\s* (public|private|protected): \\s* $
+    #   |^ \\s* @(public|private|protected) \\s* $
+    #   |^ \\s* \\{ \\} $
+    #   '
+    # 'decreaseIndentPattern': '(?x)
+    #    ^ \\s* (\\s* /[*] .* [*]/ \\s*)* \\}
+    #   |^ \\s* (\\s* /[*] .* [*]/ \\s*)* \\)
+    #   |^ \\s* (public|private|protected): \\s* $
+    #   |^ \\s* @(public|private|protected) \\s* $
+    #   '
+    # 'foldEndPattern': '(?<!\\*)\\*\\*/|^\\s*\\}'
+'.text.todo.markup .meta.definitions-section':
+  editor:
+    commentStart: '//'
+    increaseIndentPattern: '(?x)
+       ^\\s*#define\\s+(function\\s*(<.*?>)?|time\\s+(macro|function))\\s*:.+$
+      '

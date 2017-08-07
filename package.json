@@ -1,0 +1,14 @@
+{
+  "name": "dqs-todo",
+  "version": "0.0.0",
+  "description": "A language to organize todo lists with dates and directives.",
+  "keywords": [
+  ],
+  "repository": "https://github.com/atom/dqs-todo",
+  "license": "MIT",
+  "engines": {
+    "atom": ">=1.0.0 <2.0.0"
+  },
+  "dependencies": {
+  }
+}
